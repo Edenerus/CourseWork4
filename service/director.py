@@ -18,24 +18,12 @@ class DirectorService:
         did = data.get("id")
         director = self.get_one(did)
 
-        fields_to_update = ["title", "description", "trailer", "year", "rating", "genre_id", "director_id"]
+        fields_to_update = ["name"]
 
         for field in fields_to_update:
             setattr(director, field, data.get(field))
 
-        self.dao.update(data)
-
-    def patch(self, data):
-        did = data.get("id")
-        director = self.get_one(did)
-
-        fields_to_update = ["title", "description", "trailer", "year", "rating", "genre_id", "director_id"]
-
-        for field in fields_to_update:
-            if data.get(field):
-                setattr(director, field, data.get(field))
-
-        self.dao.update(data)
+        self.dao.update(director)
 
     def delete(self, did):
         self.dao.delete(did)

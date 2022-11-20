@@ -18,12 +18,12 @@ class GenreService:
         gid = data.get("id")
         genre = self.get_one(gid)
 
-        fields_to_update = ["title", "description", "trailer", "year", "rating", "genre_id", "director_id"]
+        fields_to_update = ["name"]
 
         for field in fields_to_update:
             setattr(genre, field, data.get(field))
 
-        self.dao.update(data)
+        self.dao.update(genre)
 
     def delete(self, gid):
         self.dao.delete(gid)

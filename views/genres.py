@@ -1,8 +1,9 @@
 from flask import request
 from flask_restx import Resource, Namespace
 
-from container import genre_service
+from helpers.container import genre_service
 from dao.model.genre import GenreSchema
+from helpers.decorators import auth_required, admin_required
 
 
 genres_ns = Namespace('genres')
@@ -13,6 +14,7 @@ genres_schema = GenreSchema(many=True)
 
 @genres_ns.route('/')
 class GenresView(Resource):
+    @auth_required
     def get(self):
         try:
             all_genres = genre_service.get_all()
@@ -22,6 +24,7 @@ class GenresView(Resource):
         except Exception as e:
             return str(e), 404
 
+    @admin_required
     def post(self):
         try:
             req_json = request.json
@@ -35,6 +38,7 @@ class GenresView(Resource):
 
 @genres_ns.route('/<int:gid>')
 class GenreView(Resource):
+    @auth_required
     def get(self, gid):
         try:
             genre = genre_service.get_one(gid)
@@ -47,6 +51,7 @@ class GenreView(Resource):
         except Exception as e:
             return str(e), 404
 
+    @admin_required
     def put(self, gid):
         try:
             genre = genre_service.get_one(gid)
@@ -64,23 +69,7 @@ class GenreView(Resource):
         except Exception as e:
             return str(e), 404
 
-    def patch(self, gid):
-        try:
-            genre = genre_service.get_one(gid)
-
-            if not genre:
-                return "Такого фильма нет в базе данных", 404
-
-            req_json = request.json
-            req_json["id"] = gid
-
-            genre_service.patch(req_json)
-
-            return "", 204
-
-        except Exception as e:
-            return str(e), 404
-
+    @admin_required
     def delete(self, gid):
         try:
             genre = genre_service.get_one(gid)

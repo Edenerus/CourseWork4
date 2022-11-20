@@ -6,7 +6,8 @@ from setup_db import db
 from views.movies import movies_ns
 from views.genres import genres_ns
 from views.directors import directors_ns
-from create_data import create_db_in_memory
+from views.users import users_ns
+from views.auth import auth_ns
 
 
 def create_app(config_object):
@@ -23,16 +24,12 @@ def configure_app(application):
     api.add_namespace(movies_ns)
     api.add_namespace(genres_ns)
     api.add_namespace(directors_ns)
-    create_data(application)
+    api.add_namespace(users_ns)
+    api.add_namespace(auth_ns)
 
 
-def create_data(application):
-
-    with application.app_context():
-        create_db_in_memory()
-
+config_app = Config()
+app = create_app(config_app)
 
 if __name__ == '__main__':
-    app_config = Config()
-    app = create_app(app_config)
     app.run(host="localhost", debug=True)

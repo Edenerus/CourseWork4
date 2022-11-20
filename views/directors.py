@@ -1,8 +1,9 @@
 from flask import request
 from flask_restx import Resource, Namespace
 
-from container import director_service
+from helpers.container import director_service
 from dao.model.director import DirectorSchema
+from helpers.decorators import auth_required, admin_required
 
 
 directors_ns = Namespace('directors')
@@ -13,6 +14,7 @@ directors_schema = DirectorSchema(many=True)
 
 @directors_ns.route('/')
 class DirectorsView(Resource):
+    @auth_required
     def get(self):
         try:
             all_directors = director_service.get_all()
@@ -22,6 +24,7 @@ class DirectorsView(Resource):
         except Exception as e:
             return str(e), 404
 
+    @admin_required
     def post(self):
         try:
             req_json = request.json
@@ -35,6 +38,7 @@ class DirectorsView(Resource):
 
 @directors_ns.route('/<int:did>')
 class DirectorView(Resource):
+    @auth_required
     def get(self, did):
 
         try:
@@ -48,6 +52,7 @@ class DirectorView(Resource):
         except Exception as e:
             return str(e), 404
 
+    @admin_required
     def put(self, did):
         try:
             director = director_service.get_one(did)
@@ -65,23 +70,7 @@ class DirectorView(Resource):
         except Exception as e:
             return str(e), 404
 
-    def patch(self, did):
-        try:
-            director = director_service.get_one(did)
-
-            if not director:
-                return "Такого фильма нет в базе данных", 404
-
-            req_json = request.json
-            req_json["id"] = did
-
-            director_service.patch(req_json)
-
-            return "", 204
-
-        except Exception as e:
-            return str(e), 404
-
+    @admin_required
     def delete(self, did):
         try:
             director = director_service.get_one(did)
