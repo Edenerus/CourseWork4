@@ -2,7 +2,7 @@ import hashlib
 import base64
 import hmac
 
-from helpers.constants import PWD_HASH_SALT, PWD_HASH_ITERATIONS, JWT_ALGO
+from helpers.constants import PWD_HASH_SALT, PWD_HASH_ITERATIONS
 from dao.user import UserDao
 
 
@@ -14,7 +14,7 @@ class UserService:
         return self.dao.get_one(uid)
 
     def get_one_by_username(self, username):
-        return self.dao.get_one_by_username(username)
+        return self.dao.get_by_username(username)
 
     def get_all(self, role):
 
@@ -50,9 +50,9 @@ class UserService:
 
     def check_password(self, password_hash, password):
         return hmac.compare_digest(
-            base64.b64encode(password_hash),
+            base64.b64decode(password_hash),
             hashlib.pbkdf2_hmac(
-                JWT_ALGO,
+                'sha256',
                 password.encode('utf-8'),
                 PWD_HASH_SALT,
                 PWD_HASH_ITERATIONS

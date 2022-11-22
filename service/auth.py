@@ -19,11 +19,11 @@ class AuthService:
 
         if not is_refresh:
             if not self.user_service.check_password(user.password, password):
-                raise Exception()
+                raise Exception("Stop")
 
         data = {
-            "username": username,
-            "password": password
+            "username": user.username,
+            "role": user.role
             }
 
         min30 = datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
@@ -37,7 +37,7 @@ class AuthService:
         return {"access_token": access_token, "refresh_token": refresh_token}
 
     def check_token(self, refresh_token):
-        data = jwt.decode(refresh_token, JWT_SECRET, algorithms=[JWT_ALGO])
+        data = jwt.decode(jwt=refresh_token, key=JWT_SECRET, algorithms=[JWT_ALGO, ])
         username = data.get("username")
 
         user = self.user_service.get_one_by_username(username)

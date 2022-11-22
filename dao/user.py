@@ -10,10 +10,8 @@ class UserDao:
 
         return entity
 
-    def get_one_by_username(self, username):
-        entity = self.session.query(User).filter(User.username == username).first()
-
-        return entity
+    def get_by_username(self, username):
+        return self.session.query(User).filter(User.username == username).first()
 
     def get_all(self):
         entity_list = self.session.query(User).all()
