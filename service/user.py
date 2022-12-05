@@ -13,8 +13,8 @@ class UserService:
     def get_one(self, uid):
         return self.dao.get_one(uid)
 
-    def get_one_by_username(self, username):
-        return self.dao.get_by_username(username)
+    def get_one_by_email(self, email):
+        return self.dao.get_by_email(email)
 
     def get_all(self, role):
 
@@ -32,8 +32,18 @@ class UserService:
 
         self.dao.create(data)
 
-    def update(self, user):
-        user["password"] = self.get_hash(user.get("password"))
+    def update(self, data):
+
+        uid = data.get("id")
+        user = self.get_one(uid)
+
+        fields_to_update = ["email", "name", "surname", "favorite_genre"]
+
+        for field in fields_to_update:
+            if data.get(field):
+                setattr(user, field, data.get(field))
+
+        self.dao.update(user)
 
         return self.dao.update(user)
 

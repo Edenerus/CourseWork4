@@ -1,4 +1,4 @@
-from setup_db import db
+from db_setup import db
 from dao.movie import MovieDao
 from service.movie import MovieService
 from dao.genre import GenreDao

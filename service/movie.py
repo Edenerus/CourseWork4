@@ -8,26 +8,21 @@ class MovieService:
     def get_one(self, mid):
         return self.dao.get_one(mid)
 
-    def get_all(self, director_id, genre_id, year):
+    def get_all(self, filters):
 
-        if director_id:
-            all_movies = self.dao.get_all_movies_director(director_id)
+        if filters.get("director_id") is not None:
+            movies = self.dao.get_all_movies_director(filters.get("director_id"))
 
-            return all_movies
+        elif filters.get("genre_id") is not None:
+            movies = self.dao.get_all_movies_genre(filters.get("genre_id"))
 
-        if genre_id:
-            all_movies = self.dao.get_all_movies_genre(genre_id)
+        elif filters.get("year") is not None:
+            movies = self.dao.get_all_movies_year(filters.get("year"))
 
-            return all_movies
+        else:
+            movies = self.dao.get_all(filters)
 
-        if year:
-            all_movies = self.dao.get_all_movies_year(year)
-
-            return all_movies
-
-        all_movies = self.dao.get_all()
-
-        return all_movies
+        return movies
 
     def create(self, data):
         return self.dao.create(data)

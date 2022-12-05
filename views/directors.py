@@ -17,9 +17,14 @@ class DirectorsView(Resource):
     @auth_required
     def get(self):
         try:
-            all_directors = director_service.get_all()
+            page = request.args.get('page')
 
-            return directors_schema.dump(all_directors), 200
+            filters = {
+                'page': page
+            }
+            directors = director_service.get_all(filters)
+
+            return directors_schema.dump(directors), 200
 
         except Exception as e:
             return str(e), 404

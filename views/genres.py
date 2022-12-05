@@ -17,9 +17,16 @@ class GenresView(Resource):
     @auth_required
     def get(self):
         try:
-            all_genres = genre_service.get_all()
 
-            return genres_schema.dump(all_genres), 200
+            page = request.args.get('page')
+
+            filters = {
+                'page': page
+            }
+
+            genres = genre_service.get_all(filters)
+
+            return genres_schema.dump(genres), 200
 
         except Exception as e:
             return str(e), 404

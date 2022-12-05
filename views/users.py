@@ -3,6 +3,7 @@ from flask_restx import Resource, Namespace
 
 from dao.model.user import UserSchema
 from helpers.container import user_service
+from helpers.decorators import auth_required, admin_required
 
 
 users_ns = Namespace('users')
@@ -13,6 +14,7 @@ users_schema = UserSchema(many=True)
 
 @users_ns.route('/')
 class UsersView(Resource):
+    @auth_required
     def get(self):
         try:
 
@@ -25,10 +27,26 @@ class UsersView(Resource):
         except Exception as e:
             return str(e), 404
 
-    def post(self):
+
+@users_ns.route('/password/')
+class UpdatePasswordViews(Resource):
+    def put(self):
         try:
             req_json = request.json
-            user_service.create(req_json)
+
+            email = req_json.get('email')
+            old_password = req_json.get('password_1')
+            new_password = req_json.get('password_2')
+
+            user = user_service.get_one_by_email(email)
+
+            if user_service.check_password(user.password, old_password):
+                user.password = user_service.get_hash(new_password)
+                result = UserSchema().dump(user)
+                user_service.update(result)
+
+            else:
+                print("Password did not changed")
 
         except Exception as e:
             return str(e), 404
@@ -38,6 +56,7 @@ class UsersView(Resource):
 
 @users_ns.route('/<int:uid>')
 class UserView(Resource):
+    @auth_required
     def get(self, uid):
         try:
             user = user_service.get_one(uid)
@@ -50,7 +69,8 @@ class UserView(Resource):
         except Exception as e:
             return str(e), 404
 
-    def put(self, uid):
+    @auth_required
+    def patch(self, uid):
         try:
 
             req_json = request.json
@@ -68,6 +88,7 @@ class UserView(Resource):
         except Exception as e:
             return str(e), 404
 
+    @admin_required
     def delete(self, uid):
         try:
             user = user_service.get_one(uid)

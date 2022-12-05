@@ -18,11 +18,21 @@ class MoviesView(Resource):
     def get(self):
         try:
 
-            director_id = request.args.get('director_id')
-            genre_id = request.args.get('genre_id')
+            director = request.args.get('director_id')
+            genre = request.args.get('genre_id')
             year = request.args.get('year')
+            status = request.args.get('status')
+            page = request.args.get('page')
 
-            movies = movie_service.get_all(director_id, genre_id, year)
+            filters = {
+                "director_id": director,
+                "genre_id": genre,
+                "year": year,
+                'status': status,
+                'page': page
+            }
+
+            movies = movie_service.get_all(filters)
 
             return movies_schema.dump(movies), 200
 

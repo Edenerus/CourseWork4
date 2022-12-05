@@ -10,8 +10,8 @@ class UserDao:
 
         return entity
 
-    def get_by_username(self, username):
-        return self.session.query(User).filter(User.username == username).first()
+    def get_by_email(self, email):
+        return self.session.query(User).filter(User.email == email).first()
 
     def get_all(self):
         entity_list = self.session.query(User).all()

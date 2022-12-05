@@ -12,10 +12,19 @@ class MovieDao:
 
         return entity
 
-    def get_all(self):
-        entity_list = self.session.query(Movie).all()
+    def get_all(self, filter):
+        status = filter.get('status')
+        page = filter.get('page')
 
-        return entity_list
+        if status == 'new' and page is not None:
+            return self.session.query(Movie).order_by(Movie.year.desc()).paginate(int(page), per_page=12).items
+        elif page is not None:
+            return self.session.query(Movie).paginate(int(page), per_page=12).items
+
+        elif status is not None:
+            return self.session.query(Movie).order_by(Movie.year.desc()).all()
+
+        return self.session.query(Movie).all()
 
     def get_all_movies_director(self, director_id):
         all_movies = self.session.query(Movie).filter(Director.id == director_id).join(Director)

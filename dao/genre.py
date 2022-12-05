@@ -10,10 +10,13 @@ class GenreDao:
 
         return entity
 
-    def get_all(self):
-        entity_list = self.session.query(Genre).all()
+    def get_all(self, filter):
+        page = filter.get('page')
 
-        return entity_list
+        if page is not None:
+            return self.session.query(Genre).paginate(int(page), per_page=12).items
+
+        return self.session.query(Genre).all()
 
     def create(self, data):
         genre = Genre(**data)
